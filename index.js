@@ -20,9 +20,10 @@ const HTTPSnippet = require('httpsnippet')
  * @param {string} method   HTTP method identifying endpoint, e.g., 'get'
  * @param {array} targets   List of languages to create snippets in, e.g, 
  *                          ['cURL', 'Node']
+ * @param {object} targetOptions   Optional: Options to pass to httpsnippet keyed by target string
  * @param {object} values   Optional: Values for the query parameters if present
  */
-const getEndpointSnippets = function (openApi, path, method, targets, values) {
+const getEndpointSnippets = function (openApi, path, method, targets, targetOptions, values) {
   // if optional parameter is not provided, set it to empty object
   if (typeof values === 'undefined') {
     values = {}
@@ -34,12 +35,12 @@ const getEndpointSnippets = function (openApi, path, method, targets, values) {
 
   const snippets = []
   for (let j in targets) {
-    const target = formatTarget(targets[j])
+    const target = formatTarget(targets[j], targetOptions)
     if (!target) throw new Error('Invalid target: ' + targets[j])
     snippets.push({
       id: targets[j],
       title: target.title,
-      content: snippet.convert(target.language, typeof target.library !== 'undefined' ? target.library : null)
+      content: snippet.convert(target.language, target.library, target.options)
     })
   }
 
@@ -148,10 +149,12 @@ const getResourceName = function (urlStr) {
  * @param  {string} targetStr String defining a target, e.g., node_request
  * @return {object}           Object with formatted target, or null
  */
-const formatTarget = function (targetStr) {
+const formatTarget = function (targetStr, targetOptions) {
   const language = targetStr.split('_')[0]
   const title = capitalizeFirstLetter(language)
   let library = targetStr.split('_')[1]
+
+  const options = targetOptions[targetStr]
 
   const validTargets = HTTPSnippet.availableTargets()
   let validLanguage = false
@@ -161,7 +164,7 @@ const formatTarget = function (targetStr) {
     if (language === target.key) {
       validLanguage = true
       if (typeof library === 'undefined') {
-        library = target.default
+        library = target.default || null
         validLibrary = true
       } else {
         for (let j in target.clients) {
@@ -182,7 +185,8 @@ const formatTarget = function (targetStr) {
   return {
     title: typeof library !== 'undefined' ? title + ' + ' + capitalizeFirstLetter(library) : title,
     language,
-    library
+    library,
+    options
   }
 }
 
