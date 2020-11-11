@@ -209,8 +209,7 @@ const getFullPath = function (openApi, path, method) {
 }
 
 /**
- * Get an array of objects describing the header for a path and method pair
- * described in the given OpenAPI document.
+ * Get a sample value for the given parameter
  *
  * @param  {Object} openApi OpenAPI document
  * @param  {string} param   Param object
