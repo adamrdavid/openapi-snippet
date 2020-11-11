@@ -72,33 +72,33 @@ const getPayload = function (openApi, path, method) {
       const param = openApi.paths[path][method].parameters[i]
       if (typeof param.in !== 'undefined' && param.in.toLowerCase() === 'body' &&
         typeof param.schema !== 'undefined') {
-          try {
-            const sample = OpenAPISampler.sample(param.schema, {skipReadOnly: true}, openApi)
-            return {
-              mimeType: 'application/json',
-              text: JSON.stringify(sample)
-            }
-          } catch (err) {
-            console.log(err)
-            return null
+        try {
+          const sample = OpenAPISampler.sample(param.schema, { skipReadOnly: true }, openApi)
+          return {
+            mimeType: 'application/json',
+            text: JSON.stringify(sample)
           }
+        } catch (err) {
+          console.log(err)
+          return null
+        }
       }
     }
   }
-  
+
   if (openApi.paths[path][method].requestBody && openApi.paths[path][method].requestBody['$ref']) {
     openApi.paths[path][method].requestBody = resolveRef(openApi, openApi.paths[path][method].requestBody['$ref']);
   }
 
-    if (openApi.paths[path][method].requestBody && openApi.paths[path][method].requestBody.content &&
-        openApi.paths[path][method].requestBody.content['application/json'] &&
-        openApi.paths[path][method].requestBody.content['application/json'].schema) {
-        const sample = OpenAPISampler.sample(openApi.paths[path][method].requestBody.content['application/json'].schema, {skipReadOnly: true}, openApi)
-        return {
-            mimeType: 'application/json',
-            text: JSON.stringify(sample)
-        }
+  if (openApi.paths[path][method].requestBody && openApi.paths[path][method].requestBody.content &&
+    openApi.paths[path][method].requestBody.content['application/json'] &&
+    openApi.paths[path][method].requestBody.content['application/json'].schema) {
+    const sample = OpenAPISampler.sample(openApi.paths[path][method].requestBody.content['application/json'].schema, { skipReadOnly: true }, openApi)
+    return {
+      mimeType: 'application/json',
+      text: JSON.stringify(sample)
     }
+  }
   return null
 }
 
@@ -110,7 +110,7 @@ const getPayload = function (openApi, path, method) {
  */
 const getBaseUrl = function (openApi) {
   if (openApi.servers)
-      return openApi.servers[0].url
+    return openApi.servers[0].url
   let baseUrl = ''
   if (typeof openApi.schemes !== 'undefined') {
     baseUrl += openApi.schemes[0]
@@ -272,12 +272,12 @@ const getHeadersArray = function (openApi, path, method) {
 
   // v3 'content-type' header:
   if (pathObj.requestBody && pathObj.requestBody.content) {
-      for (const type3 of Object.keys(pathObj.requestBody.content)) {
-          headers.push({
-              name: 'content-type',
-              value: type3
-          });
-      }
+    for (const type3 of Object.keys(pathObj.requestBody.content)) {
+      headers.push({
+        name: 'content-type',
+        value: type3
+      });
+    }
   }
 
   // headers defined in path object:
@@ -307,7 +307,7 @@ const getHeadersArray = function (openApi, path, method) {
       const authType = secDefinition.type.toLowerCase();
       let authScheme = null;
 
-      if(authType !== 'apikey' && secDefinition.scheme != null){
+      if (authType !== 'apikey' && secDefinition.scheme != null) {
         authScheme = secDefinition.scheme.toLowerCase();
       }
 
@@ -324,7 +324,7 @@ const getHeadersArray = function (openApi, path, method) {
           oauthDef = secScheme
           break
         case 'http':
-          switch(authScheme){
+          switch (authScheme) {
             case 'bearer':
               oauthDef = secScheme
               break
@@ -342,15 +342,15 @@ const getHeadersArray = function (openApi, path, method) {
       const secDefinition = openApi.components.securitySchemes[secScheme];
       const authType = secDefinition.type.toLowerCase();
       let authScheme = null;
-      
-      if(authType !== 'apikey' && authType !== 'oauth2'){
+
+      if (authType !== 'apikey' && authType !== 'oauth2') {
         authScheme = secDefinition.scheme.toLowerCase();
       }
-      
+
       switch (authType) {
         case 'http':
-          switch(authScheme){
-            case 'bearer': 
+          switch (authScheme) {
+            case 'bearer':
               oauthDef = secScheme
               break
             case 'basic':
