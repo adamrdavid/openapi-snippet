@@ -165,10 +165,8 @@ const getQueryStrings = function (openApi, path, method, values) {
         let value = 'SOME_' + (param.type || param.schema.type).toUpperCase() + '_VALUE'
         if (typeof values[param.name] !== 'undefined') {
           value = values[param.name] + ''  /* adding a empty string to convert to string */
-        } else if (typeof param.default !== 'undefined') {
-          value = param.default + ''
-        } else if (typeof param.schema !== 'undefined' && typeof param.schema.example !== 'undefined') {
-          value = param.schema.example + ''
+        } else {
+          value = getParameterSample(openApi, param)
         }
         queryStrings.push({
           name: param.name,
@@ -208,6 +206,33 @@ const getFullPath = function (openApi, path, method) {
     }
   }
   return fullPath
+}
+
+/**
+ * Get an array of objects describing the header for a path and method pair
+ * described in the given OpenAPI document.
+ *
+ * @param  {Object} openApi OpenAPI document
+ * @param  {string} param   Param object
+ * @return {any}            Generated param sample
+ */
+const getParameterSample = function (openApi, param) {
+  let sample = OpenAPISampler.sample(param, { skipReadOnly: true }, openApi)
+  const paramType = typeof param.schema !== 'undefined' ? param.schema.type : param.type
+  const paramIn = typeof param.in !== 'undefined' ? param.in.toLowerCase() : null
+
+  if (sample.constructor === Object && Object.keys(sample).length === 0 && typeof param.schema !== 'undefined') {
+    sample = OpenAPISampler.sample(param.schema, { skipReadOnly: true }, openApi)
+  }
+  if (sample === paramType) {
+    return 'SOME_' + (param.type || param.schema.type).toUpperCase() + '_VALUE'
+  }
+  if (paramIn !== 'body') {
+    if (Array.isArray(sample)) {
+      return sample.join()
+    }
+  }
+  return JSON.stringify(sample)
 }
 
 /**
@@ -260,9 +285,10 @@ const getHeadersArray = function (openApi, path, method) {
     for (let k in pathObj.parameters) {
       const param = pathObj.parameters[k]
       if (typeof param.in !== 'undefined' && param.in.toLowerCase() === 'header') {
+        const sample = getParameterSample(openApi, param)
         headers.push({
           name: param.name,
-          value: 'SOME_' + (param.type||param.schema.type).toUpperCase() + '_VALUE'
+          value: sample
         })
       }
     }
