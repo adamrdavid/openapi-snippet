@@ -11,6 +11,10 @@
 const OpenAPIToHar = require('./openapi-to-har.js')
 const HTTPSnippet = require('httpsnippet')
 
+// Bugcrowd target client
+const bugcrowdClient = require('./custom_snippets/httpsnippet-bugcrowd-ruby-client');
+HTTPSnippet.addTargetClient('ruby', bugcrowdClient);
+
 /**
  * Return snippets for endpoint identified using path and method in the given
  * OpenAPI document.
