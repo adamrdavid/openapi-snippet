@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "httpsnippet": "adamrdavid/httpsnippet#curl-options-unescape",
-    "openapi-sampler": "^1.0.0-beta.14"
+    "openapi-sampler": "^1.0.0-beta.14",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
     "browserify": "^16.2.3",

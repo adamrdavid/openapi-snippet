@@ -12,7 +12,7 @@ const OpenAPIToHar = require('./openapi-to-har.js')
 const HTTPSnippet = require('httpsnippet')
 
 // Bugcrowd target client
-const bugcrowdClient = require('./custom_snippets/httpsnippet-bugcrowd-ruby-client');
+const bugcrowdClient = require('./custom_snippets/bugcrowd-ruby-client');
 HTTPSnippet.addTargetClient('ruby', bugcrowdClient);
 
 /**
@@ -161,6 +161,7 @@ const formatTarget = function (targetStr, targetOptions) {
   const options = typeof targetOptions === 'undefined' ? {} : targetOptions[targetStr]
 
   const validTargets = HTTPSnippet.availableTargets()
+  console.log(validTargets)
   let validLanguage = false
   let validLibrary = false
   for (let i in validTargets) {

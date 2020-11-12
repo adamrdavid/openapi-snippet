@@ -5,6 +5,7 @@ const OpenAPISnippets = require('../index')
 
 const InstagramOpenAPI = require('./instagram_swagger.json')
 const BloggerOpenAPI = require('./blogger_swagger.json')
+const BugcrowdOpenAPI = require('./bugcrowd_oas.json')
 const GitHubOpenAPI = require('./github_swagger.json')
 const WatsonOpenAPI = require('./watson_alchemy_language_swagger.json')
 const IBMOpenAPI = require('./ibm_watson_alchemy_data_news_api.json')
@@ -24,7 +25,6 @@ test('An invalid target should result in error', function (t) {
 
   try {
     const result = OpenAPISnippets.getSnippets(BloggerOpenAPI, ['node_asfd'])
-    console.log(result)
   } catch (err) {
     t.equal(err.toString(), 'Error: Invalid target: node_asfd')
   }
@@ -111,6 +111,20 @@ test('Resolve samples from nested examples', function (t) {
 test('Parameters that are Schema References Are Dereferenced', function (t) {
   const result = OpenAPISnippets.getEndpointSnippets(ParameterSchemaReferenceAPI, '/pets', 'post', ['node_request']);
   const snippet = result.snippets[0].content;
-  t.true(/pet: '{"name":"string","tag":"string"}'/.test(snippet))
+  t.match(snippet, /pet: '{"name":"string","tag":"string"}'/)
+  t.end();
+});
+
+test('Works with custom bugcrowd client', function (t) {
+  const result = OpenAPISnippets.getEndpointSnippets(BugcrowdOpenAPI, '/pets', 'post', ['ruby_bugcrowd']);
+  const snippet = result.snippets[0].content;
+  t.match(snippet, /CrowdControl\.pets\(params: params\)/)
+  t.end();
+});
+
+test('Works with custom bugcrowd client', function (t) {
+  const result = OpenAPISnippets.getEndpointSnippets(BugcrowdOpenAPI, '/pets/{id}', 'get', ['ruby_bugcrowd']);
+  const snippet = result.snippets[0].content;
+  t.match(snippet, /CrowdControl\.pet\('10000000-0000-0000-0000-000000000000', params: params\)/)
   t.end();
 });
