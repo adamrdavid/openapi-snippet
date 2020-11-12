@@ -23,7 +23,7 @@ const HTTPSnippet = require('httpsnippet')
  * @param {object} targetOptions   Optional: Options to pass to httpsnippet keyed by target string
  * @param {object} values   Optional: Values for the query parameters if present
  */
-const getEndpointSnippets = function (openApi, path, method, targets, targetOptions, values) {
+const getEndpointSnippets = function (openApi, path, method, targets, values, targetOptions) {
   // if optional parameter is not provided, set it to empty object
   if (typeof values === 'undefined') {
     values = {}
@@ -154,7 +154,7 @@ const formatTarget = function (targetStr, targetOptions) {
   const title = capitalizeFirstLetter(language)
   let library = targetStr.split('_')[1]
 
-  const options = targetOptions[targetStr]
+  const options = typeof targetOptions === 'undefined' ? {} : targetOptions[targetStr]
 
   const validTargets = HTTPSnippet.availableTargets()
   let validLanguage = false

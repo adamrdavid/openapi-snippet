@@ -220,7 +220,8 @@ const getParameterSample = function (openApi, param) {
   const paramType = typeof param.schema !== 'undefined' ? param.schema.type : param.type
   const paramIn = typeof param.in !== 'undefined' ? param.in.toLowerCase() : null
 
-  if (sample.constructor === Object && Object.keys(sample).length === 0 && typeof param.schema !== 'undefined') {
+  if (sample === null || sample.constructor === Object &&
+      Object.keys(sample).length === 0 && typeof param.schema !== 'undefined') {
     sample = OpenAPISampler.sample(param.schema, { skipReadOnly: true }, openApi)
   }
   if (sample === paramType) {

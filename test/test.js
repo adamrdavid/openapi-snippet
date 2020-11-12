@@ -111,6 +111,6 @@ test('Resolve samples from nested examples', function (t) {
 test('Parameters that are Schema References Are Dereferenced', function (t) {
   const result = OpenAPISnippets.getEndpointSnippets(ParameterSchemaReferenceAPI, '/pets', 'post', ['node_request']);
   const snippet = result.snippets[0].content;
-  t.true(/pet: 'SOME_OBJECT_VALUE'/.test(snippet))
+  t.true(/pet: '{"name":"string","tag":"string"}'/.test(snippet))
   t.end();
 });
